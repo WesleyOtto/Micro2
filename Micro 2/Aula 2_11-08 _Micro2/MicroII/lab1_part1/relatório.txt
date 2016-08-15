@@ -1,0 +1,12 @@
+11/08
+
+- Lab1_part1
+
+item 10:
+O resultado da execução é 6. 
+
+- Lab1_part2
+
+1. Ao alterar o pc, o início da lista também é alterado, cortando a análise dos dois primeiros elementos da lista (o 2 e 0 8). Com isso, o maior número da lista passa a ser o 6.
+
+2. 

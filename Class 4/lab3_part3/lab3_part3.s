@@ -1,23 +1,25 @@
 .equ TEST_NUM, 0xB51		/* The number to be tested */
 .equ MASK, 0x01
 .equ MASK2, 0xAAAAAAAA
+.equ STACK, 0x20000
 
 
 .global _start
 _start:
-	movia r8, TEST_NUM		/* Load r8 with the number to be tested */
-	movia r9, MASK2
-	movia r5, MASK
-	xor r4, r9, r8
-	call COUNTER
-	mov r16, r2
-	nor r4, r4, r4
-	call COUNTER
-	mov r17, r2
-	bgt r17, r16, CHANGE
 
-	CHANGE: 
-		mov r16, r17
+	movia sp, STACK  		/*  Get space to use stack*/ 
+	add fp, sp, r0
+	movia r8, TEST_NUM		/* Load r8 with the number to be tested */
+	movia r9, MASK2 		/* Copy invertion mask to r9 */ 
+	movia r5, MASK 			/* Copy mask to r5 */ 
+	xor r4, r9, r8          /* Make de invertion */  
+	call COUNTER            
+	mov r16, r2         	/* Return value to r16 /*
+	nor r4, r4, r4          /* not r4 */
+	call COUNTER
+	mov r17, r2				/* Return value to r17 /*					 
+	bgt r16, r17, END       /* if r16 is the greatest */
+	mov r16, r17			
 
 END:
 	br	END				/* Wait here when the program has completed */
@@ -26,8 +28,8 @@ END:
 
 	COUNTER:
 
-/*********************************************************/
-/**********************PRÓLOGO****************************/
+/********************************************************/
+/********************PRÓLOGO****************************/
 /*********************************************************/
 
 /* Adjust the stack pointer */
@@ -40,7 +42,7 @@ END:
 	stw r17, 0(sp)
 
 /* Set the new frame pointer */
-	addi fp, sp, 0
+	addi fp, sp, 8
 
 
 /*********************************************************/
@@ -62,7 +64,7 @@ STRING_COUNTER_LOOP:
 	and r14, r9, r13	
 	srli r9, r9, 0x01
 	beq r13, r14, INC_COUNTER  /*If found 1*/
-	br END_STRING_COUNTER
+	br STRING_COUNTER
 
 	INC_COUNTER:
 		addi r10, r10, 1		
@@ -79,11 +81,11 @@ END_STRING_COUNTER:
 
 /* Restore ra, fp, sp, and registers */
 	mov sp, fp
-	ldw ra, 12(sp)
-	ldw fp, 8(sp)
-	ldw r16, 4(sp)
-	ldw r17, 0(sp)
-	addi sp, sp, 0
+	ldw ra, 4(sp)
+	ldw fp, 0(sp)
+	ldw r16, -4(sp)
+	ldw r17, -8(sp)
+	addi sp, sp, 8
 
 /* Return from subroutine */
 ret

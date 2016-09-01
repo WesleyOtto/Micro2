@@ -1,4 +1,4 @@
-.equ TEST_NUM, 0x90abcdef		/* The number to be tested */
+.equ TEST_NUM, 0xffba		/* The number to be tested */
 .equ MASK, 0x01
 
 .global _start
@@ -18,11 +18,11 @@ STRING_COUNTER_LOOP:
 	and r14, r9, r13	
 	srli r9, r9, 0x01
 	beq r13, r14, INC_COUNTER  /*If found 1*/
-	br END_STRING_COUNTER
+	br STRING_COUNTER
 
 	INC_COUNTER:
 		addi r10, r10, 1		
-		blt r10, r15, STRING_COUNTER_LOOP  /* If r10 < r15, jmp to loop*/
+		ble r10, r15, STRING_COUNTER_LOOP /* If r10 < r15, jmp to loop*/
 		mov r15, r10 						/* Updating the backup*/
 		br STRING_COUNTER_LOOP
 
@@ -32,3 +32,4 @@ END_STRING_COUNTER:
 END:
 	br	END				/* Wait here when the program has completed */
 .end
+

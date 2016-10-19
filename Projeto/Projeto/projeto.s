@@ -1,7 +1,16 @@
+.equ KEYBOARD, 0x10001000
+.equ MASK_WSPACE, 0xFFFF0000
+.equ REDLED_BASEADDRESS, 0x10000000
 
 .global _start
 _start:
 
+/*********************************************************/
+/**********************PRINT******************************/
+/*********************************************************/
+
+	movia r1, KEYBOARD
+	movia r2, MASK_WSPACE
 	movia r7, MSG
 	movia r8, MSG_SIZE
 
@@ -21,6 +30,26 @@ PRINT:
 		addi r7, r7, 4					# Next letter
 		subi r8, r8, 1					# Counter to word size
 		bne r8, r0, PRINT
+
+/*********************************************************/
+/**********************LEDRXX*****************************/
+/*********************************************************/
+
+	movia r7, REDLED_BASEADDRESS
+
+    addi r5, r0, 9						# For a while this number is a constant. But we need to get this number from user
+
+    addi r6, r0, 1						# Number 1 to SHIFT
+
+    # SHIFT the r5 value to get the value to set LEDS
+    SHIFT:
+    	beq r5, r0, NOT_SHIFT
+    	slli r6, r6, 1
+    	subi r5, r5, 1
+    	br SHIFT
+
+    NOT_SHIFT:	
+	stwio r6, 0(r7)
 
 END:
 	br END

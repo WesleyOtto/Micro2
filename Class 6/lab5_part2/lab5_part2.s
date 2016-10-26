@@ -1,10 +1,12 @@
 .equ MASK_RVALID, 	0x00008000	
 .equ MASK_DATA, 	0x000000FF
+.equ MASK_WSPACE, 	0xFFFF0000
 .equ KEYBOARD, 		0x10001000
 
 .global _start
 _start:
 
+	movia r2, MASK_WSPACE
 	movia r3, MASK_RVALID
 	movia r4, MASK_DATA
 	movia r5, KEYBOARD
@@ -21,5 +23,5 @@ WRITE:
 	and r7, r2, r6					# Verify space availability [WSPACE]
 	beq r0, r7, WRITE				# While there's no space, wait...
 
-	stwio r10, 0(r5)				# Print z on the terminal (using Data Register)
+	stwio r10, 0(r5)				# Print char on the terminal (using Data Register)
 	br READ

@@ -1,3 +1,5 @@
+.equ	STACK, 0x20000
+
 .global _start
 _start:
 
@@ -5,21 +7,18 @@ _start:
 /**********************PRINT******************************/
 /*********************************************************/
 
-	movia r4, MSG
-	movia r5, MSG_SIZE
-  call 	PRINTF
+	movia	sp, STACK          /* Configura registradores da pilha e    */
+    mov fp, sp         		   /* e frame pointer.                      */
+	call PRINTF
 
-/*********************************************************/
 /**********************LEDRXX*****************************/
 /*********************************************************/
-
+/*********************************************************/
+	movia	sp, STACK          /* Configura registradores da pilha e    */
+    mov fp, sp         		   /* e frame pointer.                      */
 	call LEDRXX
+
 
 END:
 	br END
 
-.org 0x500
-MSG_SIZE:
-.word 20
-MSG:
-.word 'E', 'N', 'T', 'R', 'E', ' ', 'C', 'O', 'M', ' ', 'O', ' ', 'C', 'O', 'M', 'A', 'N', 'D', 'O', ':'

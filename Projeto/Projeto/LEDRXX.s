@@ -1,11 +1,15 @@
+#change R9 to do
 .equ REDLED_BASEADDRESS, 0x10000000
+
+.global LEDRXX
+LEDRXX:
 
 /*********************************************************/
 /**********************PRÓLOGO****************************/
 /*********************************************************/
 
 /* Adjust the stack pointer */
-	addi sp, sp, -12	/* make a 12-byte frame */
+	addi sp, sp, -8	/* make a 8-byte frame */
 
 /* Store registers to the frame */
 	stw ra, 4(sp) 	/* store the return address */

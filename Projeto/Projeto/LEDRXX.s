@@ -26,14 +26,8 @@ LEDRXX:
 
 		# SHIFT the r4 value to get the value to set LEDS
 
-		SHIFT:
-    	beq r4, r0, NOT_SHIFT
-    	slli r10, r10, 1
-    	subi r4, r4, 1
-    	br SHIFT
-
-		NOT_SHIFT:
-	stwio r10, 0(r8)
+		sll r10, r10, r4
+    	stwio r10, 0(r8)
 
 /*********************************************************/
 /**********************EPILOGO****************************/

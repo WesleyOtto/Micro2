@@ -7,6 +7,7 @@
 .global _start
 _start:
 
+
 BEGIN:
 	movia r8, LASTCMD				# After ENTER rewrite these addresses
 
@@ -24,8 +25,8 @@ READ:
 
 WRITE:
 	ldwio r6, 4(r5)					# Read control register
-	and r7, r2, r6					# Verify space availability [WSPACE]
-	beq r0, r7, WRITE				# While there's no space, wait...
+	and r3, r2, r6					# Verify space availability [WSPACE]
+	beq r0, r3, WRITE				# While there's no space, wait...
 
 	stwio r10, 0(r5)				# Print char on the terminal (using Data Register)
 
@@ -39,6 +40,8 @@ WRITE:
 
 EXECUTE:
 	movia r8, LASTCMD
+
+	# Get command entered by user (0x30 is the ASCII base value)
 	ldw r9, 0(r8)
 	subi r9, r9, 0x30
 	ldw r10, 4(r8)
@@ -65,14 +68,46 @@ EXECUTE:
 	br BEGIN
 
 LED_ON:
+	# Get LED number (0x30 is the ASCII base value)
+	ldw r9, 8(r8)
+	subi r9, r9, 0x30
+	ldw r10, 12(r8)
+	subi r10, r10, 0x30
 
+	# Multiply r9 by 10 and add to r10
+	slli r11, r9, 3
+	slli r12, r9, 1
+	add r9, r11, r12
+	add r9, r9, r10
+
+	# Set bit to turn ON the LED
+	addi r10, r0, 1
+	subi r9, r9, 1
+	sll r10, r10, r9
+	or r7, r7, r10
 
 	br BEGIN
 
 
 LED_OFF:
+	# Get LED number (0x30 is the ASCII base value)
+	ldw r9, 8(r8)
+	subi r9, r9, 0x30
+	ldw r10, 12(r8)
+	subi r10, r10, 0x30
 
+	# Multiply r9 by 10 and add to r10
+	slli r11, r9, 3
+	slli r12, r9, 1
+	add r9, r11, r12
+	add r9, r9, r10
 
+	# Unset bit to turn OFF the LED
+	addi r10, r0, 1
+	subi r9, r9, 1
+	sll r10, r10, r9
+	nor r10, r10, r10
+	and r7, r7, r10
 
 	br BEGIN
 
@@ -98,5 +133,5 @@ CANCEL_ROT:
 	br 	BEGIN
 
 
-.org 0x100
+.org 0x2500
 LASTCMD:

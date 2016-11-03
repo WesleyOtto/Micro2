@@ -1,43 +1,44 @@
-.equ MASK_TIME_OUT,			 0x1
-.equ MASK_START, 				 0x4
-.equ TEMP_BASEADRESS,	   0x10002000
-.equ TIME_COUNTER , 		 0x17D7840 	#25 Milhões
-.equ REDLED_BASEADDRESS, 0x10000000
+.equ MASK_CPU_INTERRUP,		0x1
+.equ MASK_START, 					0x7
+.equ TIMER_BASEADRESS,		0x10002000
+.equ TIME_COUNTERH, 			0x017d 				#25 MILION high
+.equ TIME_COUNTERL, 			0x7840  			#25 MILION LOW
+.equ REDLED_BASEADDRESS,	0x10000000
 
-.org 0x200
+.org 0x20
 /*********************************************************/
 /**********************INTERRUP****************************/
 /*********************************************************/
 
+ /* Exception Handler */
+
+	rdctl et, ipending
+	beq et, r0, OTHER_EXCEPTIONS
+
 HARDWARE_EXCEPTION:					# Standard program
 
-	subi ea, ea, 4
-	ldwio r11, 4(12)					#Load Reg Control
-	and r11, r11, r9
-	bne r9, r11, END_HANDLER	#Verifico se Time_out está setado
+	andi r22, et, 0b1 				#interval timer is interrupt level 0
+	beq r22,r0,END_HANDLER
 
-	#Status Register Counter (TO, RUN)
+	sthio r0,0(r12) 					#clear Time Out ( clear the interrupt )
+	addi r16,r0,0x10
 
-	addi r10, r0, 1 						# Number 1 to SHIFT
+	########TESTE#########
+		addi r16,r0,0x5
+	 addi r10, r0, 1
+  ########TESTE########
 
 	ON:
 		bne	r15,r0,OFF
-		sll r10, r10, r4        # SHIFT the r4 value to get the value to set LEDS
-		stwio r10, 0(r8)
-		addi r15,r0,1
- 		br AGAIN_COUNT
+		stwio r7, 0(r8)
+		addi r15, r0, 1
+ 		br END_HANDLER
 
 	OFF:
-		mov r10,r0
-		stwio r10, 0(r8)
-		addi r15,r0,-1
+		stwio r0, 0(r8)
+		add r15, r0, r0
 
-	AGAIN_COUNT:
-	  stwio r13, 8(r12)  #Set to Counter start Value with 25 MILION
-
-	# Counter registers
-	  stwio r14, 4(r12)			# Set to start the Counter -
-
+	OTHER_EXCEPTIONS:
 	END_HANDLER:
 		eret
 
@@ -63,16 +64,29 @@ LEDFLASH:
 /*********************************************************/
 
 movia r8,  REDLED_BASEADDRESS
-movia r9,  MASK_TIME_OUT
-movia r12, TEMP_BASEADRESS
-movia r13, TIME_COUNTER
+movia r9,  MASK_CPU_INTERRUP
+movia r12, TIMER_BASEADRESS
+movia r13, TIME_COUNTERH
+movia r17, TIME_COUNTERL
 movia r14, MASK_START
-add r15,r0,r0
 
-stwio r13, 8(r12)  #Set to Counter start Value with 25 MILION
+add r15,r0,r0						 #Flag to LED ON or LED OFF
 
-# Counter registers
-stwio r14, 4(r12)			# Set to start the Counter -
+########TESTE#########
+
+movia r7, 0x1
+xor r16,r16,r16
+
+######****** Start interval timer, enable its interrupts ******######
+
+sthio r13, 8(r12)  			#Set to low value
+sthio r17, 12(r12)  		# Set to high Value
+sthio r14, 4(r12)			  # Set, START, CONT, E ITO = 1
+
+######******enable Nios II processor interrupts******######
+
+wrctl ienable, r9 		  #Set IRQ bit 0
+wrctl status, r9 			  #turn on Nios II interrupt processing ( SET PIE = 1 )
 
 END:
 

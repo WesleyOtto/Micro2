@@ -3,7 +3,8 @@
 .equ MASK_WSPACE, 	0xFFFF0000
 .equ KEYBOARD, 		0x10001000
 .equ ENTER,			0x0000000A
-.equ STACK, 		0x2000
+.equ BACKSPACE,		0x00000008
+.equ STACK, 		0x00002000
 
 .global _start
 _start:
@@ -44,10 +45,16 @@ WRITE:
 
 	movia r4, ENTER
 	beq r10, r4, EXECUTE			# If ENTER is hit, execute COMMAND
+	movia r4, BACKSPACE
+	beq r10, r4, ERASE				# If BACKSPACE is hit, erase last char from memory
 
 	stw r10, 0(r8)					# Keep command value on memory
 	addi r8, r8, 4
 
+	br READ
+
+ERASE:
+	subi r8, r8, 4
 	br READ
 
 EXECUTE:
@@ -139,7 +146,6 @@ CANCEL_ROT:
 
 
 	br 	BEGIN
-
 
 .org 0x2500
 LASTCMD:

@@ -1,0 +1,7 @@
+#Ignore files
+*.s.o
+*.o
+*.ncf
+*.srec
+*.elf
+Project/Project/nios_macros.s

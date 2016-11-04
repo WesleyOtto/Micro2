@@ -92,7 +92,6 @@ LED_ON:
   
   	# Set bit to turn ON the LED
   	addi r10, r0, 1
-  	subi r9, r9, 1
   	sll r10, r10, r9
   	or r7, r7, r10
   
@@ -114,7 +113,6 @@ LED_OFF:
   
   	# Unset bit to turn OFF the LED
   	addi r10, r0, 1
-  	subi r9, r9, 1
   	sll r10, r10, r9
   	nor r10, r10, r10
   	and r7, r7, r10

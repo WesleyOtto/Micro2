@@ -5,6 +5,7 @@
 .equ ENTER,					0x0000000A
 .equ BACKSPACE,			0x00000008
 .equ STACK, 				0x00002000
+.equ SWITCH_BASE_ADDRESS, 0x10000040
 
 .global _start
 _start:
@@ -126,6 +127,16 @@ LED_OFF:
 	br BEGIN
 
 TRIANG_NUM:
+	movia r10, SWITCH_BASE_ADDRESS
+
+	# Read SWITCH number on r6
+	ldwio r6, 0(r10)			
+	# R5 = R6 + 1		
+	addi r5, r6, 1
+	# R6 = R6 * R5 [n * (n+1)]
+	mul r6, r6, r5
+	# R6 = R6 / 2
+	srli r6, r6, 1
 
 	br BEGIN
 

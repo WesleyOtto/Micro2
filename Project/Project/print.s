@@ -55,5 +55,4 @@ SPACE_LOOP:
 MSG_SIZE:
 .word 21
 MSG:
-.word 'E', 'N', 'T', 'R', 'E', ' ', 'C', 'O', 'M', ' ', 'O', ' ',
-'C', 'O', 'M', 'A', 'N', 'D', 'O', ':', 0xA
+.word 'E', 'N', 'T', 'R', 'E', ' ', 'C', 'O', 'M', ' ', 'O', ' ', 'C', 'O', 'M', 'A', 'N', 'D', 'O', ':', 0xA

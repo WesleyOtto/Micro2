@@ -6,6 +6,7 @@
 .equ BACKSPACE,			0x00000008
 .equ STACK, 				0x00002000
 .equ SWITCH_BASE_ADDRESS, 0x10000040
+.equ DISPLAY_BASE_ADDRESS, 0x10000020
 
 .global _start
 _start:
@@ -127,7 +128,9 @@ LED_OFF:
 	br BEGIN
 
 TRIANG_NUM:
+	movia r4, DISPLAY_BASE_ADDRESS
 	movia r10, SWITCH_BASE_ADDRESS
+	movia r11, MAP
 
 	# Read SWITCH number on r6
 	ldwio r6, 0(r10)			
@@ -137,6 +140,28 @@ TRIANG_NUM:
 	mul r6, r6, r5
 	# R6 = R6 / 2
 	srli r6, r6, 1
+	
+	add r15, r0, r0
+	add r16, r0, r0
+	addi r10, r0, 10
+	
+	LOOP:		
+		div r8, r6, r10
+		mul r9, r8, r10
+		sub r9, r6, r9 
+    	add r6, r8, r0
+
+		add r2, r11, r9			 	    # Add base address to map
+		ldb r2, 0(r2)					# Load the array value on r2
+
+		sll r2, r2, r15					# Shift to save value at the right position
+
+		addi r15, r15, 8				# Increment to the next display (number of shift)
+		or r16, r16, r2					# This OR is used to preserve previous value
+
+		stwio r16, 0(r4)				# Set Display value
+
+		bne r6, r0, LOOP 				# Compare r6 to 0, if r6 ==0, the number is over
 
 	br BEGIN
 
@@ -150,4 +175,6 @@ CANCEL_ROT:
 
 /********************** COMMAND BUFFER **********************/
 .org 0x2500
+MAP:
+.byte 0b111111,0b110,0b1011011,0b1001111,0b1100110,0b1101101,0b1111101,0b111,0b1111111,0b1100111
 LASTCMD:

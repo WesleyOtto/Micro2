@@ -1,5 +1,4 @@
-.equ KEYBOARD, 		0x10001000
-.equ MASK_WSPACE, 0xFFFF0000
+.include 'consts.s'
 
 .global PRINTF
 PRINTF:
@@ -51,8 +50,3 @@ SPACE_LOOP:
 	addi sp, sp, 0
 	ret												# Return from subroutine
 
-.org 0x3000
-MSG_SIZE:
-.word 21
-MSG:
-.word 'E', 'N', 'T', 'R', 'E', ' ', 'C', 'O', 'M', ' ', 'O', ' ', 'C', 'O', 'M', 'A', 'N', 'D', 'O', ':', 0xA

@@ -1,13 +1,4 @@
-.equ MASK_RVALID,		0x00008000
-.equ MASK_DATA, 		0x000000FF
-.equ MASK_WSPACE, 	0xFFFF0000
-.equ KEYBOARD, 			0x10001000
-.equ ENTER,					0x0000000A
-.equ BACKSPACE,			0x00000008
-.equ STACK, 				0x00002000
-.equ SWITCH_BASE_ADDRESS, 0x10000040
-.equ DISPLAY_BASE_ADDRESS, 0x10000020
-
+.include 'consts.s'
 .global _start
 _start:
 
@@ -43,9 +34,9 @@ WRITE:
 
 	stwio r10, 0(r5)			# Print char on the terminal (using Data Register)
 
-	movia r4, ENTER
+	movia r4, ENTER_ASCII
 	beq r10, r4, EXECUTE	# If ENTER is hit, execute COMMAND
-	movia r4, BACKSPACE
+	movia r4, BACKSPACE_ASCII
 	beq r10, r4, ERASE		# If BACKSPACE is hit, erase last char from memory
 
 	stw r10, 0(r8)				# Keep command value on memory
@@ -172,10 +163,3 @@ DISPLAY_MSG:
 CANCEL_ROT:
 
 	br 	BEGIN
-
-/********************** COMMAND BUFFER **********************/
-.org 0x2500
-MAP:
-.byte 0b111111,0b110,0b1011011,0b1001111,0b1100110,0b1101101,0b1111101,0b111,0b1111111,0b1100111
-.skip 0x100
-LASTCMD:

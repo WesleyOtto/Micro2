@@ -1,9 +1,4 @@
-.equ MASK_CPU_INTERRUP,		0x1
-.equ MASK_START, 					0x7
-.equ TIMER_BASEADRESS,		0x10002000
-.equ TIME_COUNTERH, 			0x017d 				# 25 MILION high (before change 0x017d)
-.equ TIME_COUNTERL, 			0x7840  			# 25 MILION LOW
-.equ REDLED_BASEADDRESS,	0x10000000
+.include 'consts.s'
 
 .org 0x20
 

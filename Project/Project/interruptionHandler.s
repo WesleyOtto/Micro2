@@ -1,7 +1,5 @@
-.include 'consts.s'
-
+.include "consts.s"
 .org 0x20
-
 /*********************************************************/
 /**********************INTERRUP***************************/
 /*********************************************************/
@@ -36,6 +34,7 @@ HARDWARE_EXCEPTION:						# Standardized code
 OTHER_EXCEPTIONS:
 END_HANDLER:
 	eret
+
 
 .global LEDFLASH
 LEDFLASH:

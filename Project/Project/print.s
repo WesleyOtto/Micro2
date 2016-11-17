@@ -1,4 +1,4 @@
-.include 'consts.s'
+.include "consts.s"
 
 .global PRINTF
 PRINTF:
@@ -31,7 +31,7 @@ SPACE_LOOP:
 
 	ldwio r11, 4(r8) 					# Read control register
 	and r12, r9, r11	 				# Verify space availability [WSPACE]
-	beq r0, r12, SPACE_LOOP		# While there's no space, wait...
+	beq r0, r12, SPACE_LOOP		        # While there's no space, wait...
 
 	stwio r10, 0(r8) 					# Print on the terminal (using Data Register)
 
@@ -50,3 +50,7 @@ SPACE_LOOP:
 	addi sp, sp, 0
 	ret												# Return from subroutine
 
+MSG_SIZE:
+.word 21
+MSG:
+.word 'E', 'N', 'T', 'R', 'E', ' ', 'C', 'O', 'M', ' ', 'O', ' ', 'C', 'O', 'M', 'A', 'N', 'D', 'O', ':', 0xA

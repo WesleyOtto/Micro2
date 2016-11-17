@@ -1,4 +1,5 @@
-.include 'consts.s'
+.include "consts.s"
+.global MAP
 .global _start
 _start:
 
@@ -163,3 +164,12 @@ DISPLAY_MSG:
 CANCEL_ROT:
 
 	br 	BEGIN
+
+/* Numbers for 7-segments */ 
+MAP:
+.byte 0b111111,0b110,0b1011011,0b1001111,0b1100110,0b1101101,0b1111101,0b111,0b1111111,0b1100111
+
+/* Storing last command */ 
+
+LASTCMD:
+.skip 0x100

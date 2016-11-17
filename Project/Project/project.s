@@ -9,10 +9,6 @@ _start:
   mov fp, sp	      	# frame pointer.
 	call PRINTF					# Call Function PRINTF
 
-	movia sp, STACK     # Set stack registers and
-  mov fp, sp         	# frame pointer.
-  call LEDFLASH	    	#	Call Function LEDFLASH who sets INTERRUPTION
-
 BEGIN:
 	movia r8, LASTCMD		# After ENTER rewrite these addresses
 
@@ -31,7 +27,7 @@ READ:
 WRITE:
 	ldwio r6, 4(r5)				# Read control register
 	and r3, r2, r6				# Verify space availability [WSPACE]
-	beq r0, r3, WRITE			# While there's no space, wait...
+	beq r0, r3, WRITE			# While theres no space, wait...
 
 	stwio r10, 0(r5)			# Print char on the terminal (using Data Register)
 
@@ -79,6 +75,11 @@ EXECUTE:
 /********************** FUNCTIONS **********************/
 
 LED_ON:
+	addi r15, r0, 1						# r15 = 1 means the LED needs to be turned ON
+	movia sp, STACK     			# Set stack registers and
+	mov fp, sp         				# frame pointer.
+	call SET_INTERRUPTION			#	Call Function to set INTERRUPTION
+
 	# Get LED number (0x30 is the ASCII base value)
 	ldw r9, 8(r8)
 	subi r9, r9, 0x30
@@ -99,6 +100,11 @@ LED_ON:
 	br BEGIN
 
 LED_OFF:
+	add r15, r0, r0						# r15 = 0 means the LED needs to be turned OFF
+	movia sp, STACK     			# Set stack registers and
+	mov fp, sp         				# frame pointer.
+	call SET_INTERRUPTION			#	Call Function to set INTERRUPTION
+
 	# Get LED number (0x30 is the ASCII base value)
 	ldw r9, 8(r8)
 	subi r9, r9, 0x30
@@ -120,44 +126,48 @@ LED_OFF:
 	br BEGIN
 
 TRIANG_NUM:
-	movia r4, DISPLAY_BASE_ADDRESS
+	movia r4, DISPLAY_BASE_ADDRESS2
 	movia r10, SWITCH_BASE_ADDRESS
 	movia r11, MAP
 
 	# Read SWITCH number on r6
-	ldwio r6, 0(r10)			
-	# R5 = R6 + 1		
+	ldwio r6, 0(r10)
+	# R5 = R6 + 1
 	addi r5, r6, 1
 	# R6 = R6 * R5 [n * (n+1)]
 	mul r6, r6, r5
 	# R6 = R6 / 2
 	srli r6, r6, 1
-	
-	add r15, r0, r0
-	add r16, r0, r0
+
+	add r5, r0, r0
+	add r12, r0, r0
 	addi r10, r0, 10
-	
-	LOOP:		
+
+	LOOP:
 		div r8, r6, r10
 		mul r9, r8, r10
-		sub r9, r6, r9 
-    	add r6, r8, r0
+		sub r9, r6, r9
+    add r6, r8, r0
 
-		add r2, r11, r9			 	    # Add base address to map
+		add r2, r11, r9			 	# Add base address to map
 		ldb r2, 0(r2)					# Load the array value on r2
 
-		sll r2, r2, r15					# Shift to save value at the right position
+		sll r2, r2, r5					# Shift to save value at the right position
 
-		addi r15, r15, 8				# Increment to the next display (number of shift)
-		or r16, r16, r2					# This OR is used to preserve previous value
+		addi r5, r5, 8					# Increment to the next display (number of shift)
+		or r12, r12, r2					# This OR is used to preserve previous value
 
-		stwio r16, 0(r4)				# Set Display value
+		stwio r12, 0(r4)				# Set Display value
 
 		bne r6, r0, LOOP 				# Compare r6 to 0, if r6 ==0, the number is over
 
 	br BEGIN
 
 DISPLAY_MSG:
+	addi r15, r0, 2						# r15 = 2 means the MESSAGE DISPLAYED is goint to rotate to the LEFT
+	movia sp, STACK     			# Set stack registers and
+	mov fp, sp         				# frame pointer.
+	call SET_INTERRUPTION			#	Call Function to set INTERRUPTION
 
 	br BEGIN
 
@@ -165,11 +175,10 @@ CANCEL_ROT:
 
 	br 	BEGIN
 
-/* Numbers for 7-segments */ 
+/* Numbers for 7-segments */
 MAP:
 .byte 0b111111,0b110,0b1011011,0b1001111,0b1100110,0b1101101,0b1111101,0b111,0b1111111,0b1100111
 
-/* Storing last command */ 
-
+/* Storing last command */
 LASTCMD:
 .skip 0x100

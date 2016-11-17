@@ -175,6 +175,11 @@ DISPLAY_MSG:
 	br BEGIN
 
 CANCEL_ROT:
+	addi r9, r0, 4
+	blt r15, r9, BEGIN							# Only cancel if rotating
+
+	add r9, r0, r0
+	wrctl status, r9 		  					# turn off Nios II interrupt processing ( SET PIE = 0 )
 
 	br 	BEGIN
 

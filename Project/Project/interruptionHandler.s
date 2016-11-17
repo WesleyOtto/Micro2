@@ -82,27 +82,26 @@ SET_INTERRUPTION:
 	addi fp, sp, 0
 
 /**********************SET INTERRUPTION*******************/
+	movia r9,  MASK_CPU_INTERRUP
+	movia r12, TIMER_BASEADRESS
+	movia r13, TIME_COUNTERH
+	movia r17, TIME_COUNTERL
+	movia r14, MASK_START
 
-movia r9,  MASK_CPU_INTERRUP
-movia r12, TIMER_BASEADRESS
-movia r13, TIME_COUNTERH
-movia r17, TIME_COUNTERL
-movia r14, MASK_START
+	bne r15, 2, SKIP_DISPLAY_TIMER
+	#movia r13, TIME_COUNTERH_ROTATE - TO DO
+	#movia r17, TIME_COUNTERL_ROTATE - TO DO
 
-bne r15, 2, SKIP_DISPLAY_TIMER
-#movia r13, TIME_COUNTERH_ROTATE - TO DO
-#movia r17, TIME_COUNTERL_ROTATE - TO DO
+	SKIP_DISPLAY_TIMER:
 
-SKIP_DISPLAY_TIMER:
+	######****** Start interval timer, enable its interrupts ******######
+	sthio r17, 8(r12)  							# Set to low value
+	sthio r13, 12(r12)  						# Set to high Value
+	sthio r14, 4(r12)								# Set, START, CONT, E ITO = 1
 
-######****** Start interval timer, enable its interrupts ******######
-sthio r17, 8(r12)  							# Set to low value
-sthio r13, 12(r12)  						# Set to high Value
-sthio r14, 4(r12)								# Set, START, CONT, E ITO = 1
-
-######******enable Nios II processor interrupts******######
-wrctl ienable, r9 		  				# Set IRQ bit 0
-wrctl status, r9 		  					# turn on Nios II interrupt processing ( SET PIE = 1 )
+	######******enable Nios II processor interrupts******######
+	wrctl ienable, r9 		  				# Set IRQ bit 0
+	wrctl status, r9 		  					# turn on Nios II interrupt processing ( SET PIE = 1 )
 
 /********************************************************/
 /*********************EPILOGUE***************************/

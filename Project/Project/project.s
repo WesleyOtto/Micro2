@@ -1,5 +1,4 @@
 .include "consts.s"
-.global MAP
 .global _start
 _start:
 
@@ -126,7 +125,11 @@ LED_OFF:
 	br BEGIN
 
 TRIANG_NUM:
+	movia r4, DISPLAY_BASE_ADDRESS1
+	stwio r0, 0(r4)									#Clear display
 	movia r4, DISPLAY_BASE_ADDRESS2
+	stwio r0, 0(r4)									#Clear display
+
 	movia r10, SWITCH_BASE_ADDRESS
 	movia r11, MAP
 

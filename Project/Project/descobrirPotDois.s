@@ -36,15 +36,15 @@ NAO_INCREMENTA:
 END_LOOP:
 
 beq r8, r3, POT                   # se tem apenas um 1 na sequencia, é potencia de 2
-addi r16, r0,0x1	                           # caso contrário, não
-br END
+addi r2, r0,0x0	                  # caso contrário, não
+br END1
 
 POT: 
-	addi r16,r0, 0x3
+	addi r2,r0, 0x1
 
-END:
+END1:
 
-br END
+
 
 /********************************************************/
 /*********************EPILOGUE***************************/
@@ -55,4 +55,5 @@ br END
   ldw ra, 4(sp)
   ldw fp, 0(sp)
   addi sp, sp, 8
-ret                     
+  ret
+     

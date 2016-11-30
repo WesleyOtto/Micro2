@@ -17,7 +17,7 @@ READ:																# Reading from keyboard using polling technique
 	movia r4, MASK_DATA
 	movia r5, KEYBOARD
 
-	ldwio r9, 0(r5)										# r9 <- JTAG UART
+	ldwio r9, 0(r5)										# R9 <- JTAG UART
 	and 	r10, r9, r3									# Verify availability [RVALID]
 	beq 	r10, r0, READ 							# If not avaiable, wait...
 
@@ -44,6 +44,15 @@ ERASE:
 	subi 	r8, r8, 4										# Erase char
 	br 		READ												# Read input again...
 
+/* ASCII <--> INT
+
+Convert X (int) to ‘X’...
+X = X + 48 (0x30)
+
+Convert 'X' to X(int)...
+X = X - 48 (0x30)
+*/
+
 EXECUTE:
 	movia r8, LASTCMD
 	ldw 	r9, 0(r8)										# Get the last command (first bit) in r9 (ASCII)
@@ -55,7 +64,7 @@ EXECUTE:
 	slli 	r11, r9, 3									# Since we are working with DE2 Media computer,
 	slli 	r12, r9, 1									# we could use "mul" operations
 	add 	r9, r11, r12
-	add 	r9, r9, r10									# r9 <- Final value
+	add 	r9, r9, r10									# R9 <- Final value
 
 	# Test which command user entered (simulation of c's switch structure)
 	addi 	r10, r0, 00
@@ -76,7 +85,7 @@ EXECUTE:
 /********************** FUNCTIONS **********************/
 
 LED_ON:
-	addi 	r15, r0, 1									# r15 = 1 means the LED needs to be turned ON
+	addi 	r15, r0, 1									# R15 = 1 means the LED needs to be turned ON
 	movia sp, STACK     							# Set stack registers and
 	mov 	fp, sp         							# frame pointer.
 	call 	SET_INTERRUPTION						#	Call Function to set INTERRUPTION
@@ -88,7 +97,7 @@ LED_ON:
 	ldw 	r10, 12(r8)
 	subi 	r10, r10, 0x30
 
-	# Multiply r9 by 10 and add to r10 (making two (integer) bits into a decimal)
+	# Multiply R9 by 10 and add to R10 (making two (integer) bits into a decimal)
 	# Logic is already explained above
 	slli 	r11, r9, 3
 	slli 	r12, r9, 1
@@ -103,7 +112,7 @@ LED_ON:
 	br 		BEGIN
 
 LED_OFF:
-	add 	r15, r0, r0									# r15 = 0 means the LED needs to be turned OFF
+	add 	r15, r0, r0									# R15 = 0 means the LED needs to be turned OFF
 	movia sp, STACK     							# Set stack registers and
 	mov 	fp, sp         							# frame pointer.
 	call 	SET_INTERRUPTION						#	Call Function to set INTERRUPTION
@@ -115,7 +124,7 @@ LED_OFF:
 	ldw 	r10, 12(r8)
 	subi 	r10, r10, 0x30
 
-	# Multiply r9 by 10 and add to r10 (making two (integer) bits into a decimal)
+	# Multiply R9 by 10 and add to R10 (making two (integer) bits into a decimal)
 	# Logic is already explained above
 	slli 	r11, r9, 3
 	slli 	r12, r9, 1
@@ -145,18 +154,18 @@ TRIANG_NUM:
 	mul 	r6, r6, r5									# R6 = R6 * R5 [n * (n+1)]
 	srli 	r6, r6, 1										# R6 = R6 / 2
 
-	add 	r5, r0, r0
-	add 	r12, r0, r0
-	addi 	r10, r0, 10
+	add 	r5, r0, r0									# R5 = 0
+	add 	r12, r0, r0									# R12 = 0
+	addi 	r10, r0, 10									# R10 = 10
 
 	LOOP:
-		div 	r8, r6, r10
-		mul 	r9, r8, r10
-		sub 	r9, r6, r9
-    add 	r6, r8, r0
+		div 	r8, r6, r10								# R8 = R6 / R10
+		mul 	r9, r8, r10								# R9 = R8 * R10
+		sub 	r9, r6, r9								# R9 = R6 - R9
+    add 	r6, r8, r0								# R6 = R8
 
 		add 	r2, r11, r9			 					# Add base address to map
-		ldb 	r2, 0(r2)									# Load the array value on r2
+		ldb 	r2, 0(r2)									# Load the array value on R2
 
 		sll 	r2, r2, r5								# Shift to save value at the right position
 
@@ -165,12 +174,12 @@ TRIANG_NUM:
 
 		stwio r12, 0(r4)								# Set Display value
 
-		bne 	r6, r0, LOOP 							# Compare r6 to 0, if r6 ==0, the number is over
+		bne 	r6, r0, LOOP 							# Compare R6 to 0, if R6 == 0, the number is over
 
 	br 		BEGIN
 
 DISPLAY_MSG:
-	addi 	r15, r0, 2									# r15 = 2 means the MESSAGE DISPLAYED is going to rotate to the LEFT
+	addi 	r15, r0, 2									# R15 = 2 means the MESSAGE DISPLAYED is going to rotate to the LEFT
 	movia sp, STACK     							# Set stack registers and
 	mov 	fp, sp         							# frame pointer
 	call 	SET_INTERRUPTION						# Call Function to set INTERRUPTION

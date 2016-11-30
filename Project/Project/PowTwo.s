@@ -19,27 +19,27 @@ POT_TWO:
 
   /**********************POT_TWO*******************/
 
-addi r3,r0, 0x1                   # r3 vale 1
-add r8, r8, zero                  # r8 é o acumulador (inicia com 0)
-addi r5, r5, 0x20                 # r5 controla quantidade de shifts (32 shifts é max pois nios2 é arquitetura 32-bit)
+addi r3, r0, 0x1                  # r3 <-  1
+addi r5, r0, 0x20                 # r5 Controls amount of shifts (32 shifts is the max)
+add r8, r0, r0                    # r8 is  acumulator (start with 0)
 
 LOOP:
   andi r6, r4, 0x1
-  bne r6, r3, NAO_INCREMENTA        # se (r4 AND 0x1) == 0, não incrementa r8
-  addi r8, r8, 0x1                  # INCREMENTA
+  bne r6, r3, NAO_INCREMENTA       # If (r4 AND 0x1) == 0,  doesn't inc r8
+  addi r8, r8, 0x1                 # INC
   bgt r8, r3, END_LOOP
 NAO_INCREMENTA:
-  srli r4, r4, 0x1                  # desloca 1 para a direita
-  subi r5, r5, 0x1                  # decrementa 1 do registrador de controle
-  beq r5, zero, END_LOOP
-  br LOOP                         # verifica o próximo bit (desolcado)
+  srli r4, r4, 0x1                 # shift right 1
+  subi r5, r5, 0x1                 # DEC 1 from control register
+  beq r5, r0, END_LOOP
+  br LOOP                         # Checks the next bit (shift)
 END_LOOP:
 
-beq r8, r3, POT                   # se tem apenas um 1 na sequencia, é potencia de 2
-addi r2, r0,0x0	                  # caso contrário, não
+beq r8, r3, POT                   # If r8 has only 1 in the sequente,ís power of 2
+addi r2, r0, 0x0
 br END1
 
-POT: 
+POT:
 	addi r2,r0, 0x1
 
 END1:
@@ -56,4 +56,3 @@ END1:
   ldw fp, 0(sp)
   addi sp, sp, 8
   ret
-     

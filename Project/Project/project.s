@@ -68,6 +68,8 @@ EXECUTE:
 	beq r9, r10, DISPLAY_MSG
 	addi r10, r0, 21
 	beq r9, r10, CANCEL_ROT
+	addi r10, r0, 30
+	beq r9, r10, POW_OF_TWO
 
 	br BEGIN
 
@@ -167,26 +169,111 @@ TRIANG_NUM:
 	br BEGIN
 
 DISPLAY_MSG:
-	addi r15, r0, 2						# r15 = 2 means the MESSAGE DISPLAYED is goint to rotate to the LEFT
-	movia sp, STACK     			# Set stack registers and
-	mov fp, sp         				# frame pointer.
-	call SET_INTERRUPTION			#	Call Function to set INTERRUPTION
+	addi r15, r0, 2						# r15 = 2 means the MESSAGE DISPLAYED is going to rotate to the LEFT
+	movia sp, STACK     				# Set stack registers and
+	mov fp, sp         					# frame pointer.
+	call SET_INTERRUPTION				# Call Function to set INTERRUPTION
 
 	br BEGIN
 
 CANCEL_ROT:
-	addi r9, r0, 4
-	blt r15, r9, BEGIN							# Only cancel if rotating
+	addi r9, r0, 2
+	blt r15, r9, BEGIN					# Only cancel if rotating
 
 	add r9, r0, r0
-	wrctl status, r9 		  					# turn off Nios II interrupt processing ( SET PIE = 0 )
+	wrctl status, r9 		  			# turn off Nios II interrupt processing ( SET PIE = 0 )
 
 	br 	BEGIN
 
+POW_OF_TWO:
+
+	# Get number (0x30 is the ASCII base value)
+
+	ldw r9, 8(r8)
+	subi r9, r9, 0x30
+
+	ldw r6, 12(r8)
+	subi r6, r6, 0x30
+
+	ldw r5, 16(r8)
+	subi r5, r5, 0x30
+
+	# Multiply r9 by 10 and add to r10
+
+	addi r10, r0,0x64 # Multiply to 100
+	mul r9, r9, r10
+
+	addi r10, r0,0xA # Multiply to  10
+	mul  r6, r6, r10
+
+	add r4, r9, r6   #Add 100 + 10
+	add r4, r4, r5   #Add 110 +  1
+
+	movia sp, STACK     			# Set stack registers and
+	mov fp, sp         				# frame pointer.
+	call POT_TWO					# Call thefunction
+
+	movia r5, ADRESS_LCD
+	movia r6, ADRESS_DATA
+	movia r3, SET_FIRST_LINE
+	movia r9, CLEAR_DISPLAY
+	addi  r10, r0, 0xD	# 14 positions for the N_POW message (first line)
+
+	stbio r9, 0(r5)     #Clear the display
+	stbio r3, 0(r5)	    #Set cursor 0 Location
+
+	addi r11, r0, -1		#Start the counter
+	bne r2, r0, POW_DISPLAY # if is pow
+
+	N_POW_LOOP:
+		addi r11, r11, 0x1
+		movia r8, N_POW		# R8 gets adress N_POW
+		add r8, r8, r11
+		ldbio r8, 0(r8)   # R8 gets the right position
+		stbio r8, 0(r6)     # Write P in display
+	bne r11, r10, N_POW_LOOP	# If not equal 14 positions for the message, continue writing in display
+
+   	movia r3, SET_SECOND_LINE  # MASK to set second line
+   	stbio r3, 0(r5)	    #Set cursor second line
+   	addi  r10, r0, 0x12	# 4 positions for the rest of the message (N_POW message (second line))
+
+   	addi r11, r11, 0x1
+ 	N_POW_LOOP2:
+ 		movia r8, N_POW		# R8 gets adress N_POW
+ 		add r8, r8, r11
+ 		ldbio r8, 0(r8)   # R8 gets the right position
+		stbio r8, 0(r6)    # Write P in display
+		addi r11, r11, 0x1
+	bne r11, r10, N_POW_LOOP2	# If not equal 14 positions for the message, continue writing in display
+
+	br BEGIN
+
+POW_DISPLAY:
+
+	movia r8, POW
+	addi  r10, r0, 0xE	# 15 positions for the POW message
+	POW_LOOP:
+		addi r11, r11, 0x1
+		movia r8, POW		# R8 gets adress N_POW
+		add r8, r8, r11
+		ldbio r8, 0(r8)   # R8 gets the right position
+		stbio r8, 0(r6)     # Write P in display
+	bne r11, r10, POW_LOOP	# If not equal 14 positions for the message, continue writing in display
+
+	br BEGIN
+
 /* Numbers for 7-segments */
 MAP:
-.byte 0b111111,0b110,0b1011011,0b1001111,0b1100110,0b1101101,0b1111101,0b111,0b1111111,0b1100111
+.byte 0b00111111,0b110,0b1011011,0b1001111,0b1100110,0b1101101,0b1111101,0b111,0b1111111,0b1100111
+
+.skip 0x100
 
 /* Storing last command */
 LASTCMD:
+
 .skip 0x100
+
+POW:
+.ascii "E potencia de 2"
+N_POW:
+.ascii "Nao e potenciade 2"

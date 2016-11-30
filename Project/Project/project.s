@@ -221,7 +221,7 @@ POW_OF_TWO:
 
 	movia sp, STACK     							# Set stack registers and
 	mov 	fp, sp         							# frame pointer
-	call 	POT_TWO											# Call thefunction
+	call 	POW_TWO											# Call thefunction
 
 	movia r5, ADRESS_LCD
 	movia r6, ADRESS_DATA

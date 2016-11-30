@@ -34,8 +34,8 @@ HARDWARE_EXCEPTION:										# Standardized code
 
 	OFF:
 		stwio r0, 0(r16)									# turn LED off
-		addi r15, r0, 1										# set R15 to 1
-		br END_HANDLER
+		addi 	r15, r0, 1									# set R15 to 1
+		br 		END_HANDLER
 
 /********************* DISPLAY ROTATE *****************/
 	DISPLAY:

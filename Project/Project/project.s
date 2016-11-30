@@ -85,11 +85,6 @@ EXECUTE:
 /********************** FUNCTIONS **********************/
 
 LED_ON:
-	addi 	r15, r0, 1									# R15 = 1 means the LED needs to be turned ON
-	movia sp, STACK     							# Set stack registers and
-	mov 	fp, sp         							# frame pointer.
-	call 	SET_INTERRUPTION						#	Call Function to set INTERRUPTION
-
 	# Get LED number (0x30 is the ASCII base value) in integer value
 	# Logic is already explained above
 	ldw 	r9, 8(r8)
@@ -109,14 +104,14 @@ LED_ON:
 	sll 	r10, r10, r9
 	or 		r7, r7, r10
 
-	br 		BEGIN
-
-LED_OFF:
-	add 	r15, r0, r0									# R15 = 0 means the LED needs to be turned OFF
+	addi 	r15, r0, 1									# R15 = 1 means the LED needs to be turned ON
 	movia sp, STACK     							# Set stack registers and
 	mov 	fp, sp         							# frame pointer.
 	call 	SET_INTERRUPTION						#	Call Function to set INTERRUPTION
 
+	br 		BEGIN
+
+LED_OFF:
 	# Get LED number (0x30 is the ASCII base value) in integer value
 	# Logic is already explained above
 	ldw 	r9, 8(r8)
@@ -136,6 +131,11 @@ LED_OFF:
 	sll 	r10, r10, r9
 	nor 	r10, r10, r10
 	and 	r7, r7, r10
+
+	add 	r15, r0, r0								# R15 = 0 means the LED needs to be turned OFF
+	movia sp, STACK     							# Set stack registers and
+	mov 	fp, sp         							# frame pointer.
+	call 	SET_INTERRUPTION						#	Call Function to set INTERRUPTION
 
 	br 		BEGIN
 

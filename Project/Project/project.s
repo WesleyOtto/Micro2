@@ -198,17 +198,21 @@ CANCEL_ROT:
 POW_OF_TWO:
 
 	# Get number (0x30 is the ASCII base value)
+	ldw 	r9, 8(r8)										# get first bit
+	subi 	r9, r9, 0x30								# convert from ASCII to INT
 
-	ldw 	r9, 8(r8)
-	subi 	r9, r9, 0x30
+	ldw 	r6, 12(r8)									# get second bit
+	subi 	r6, r6, 0x30								# convert from ASCII to INT
 
-	ldw 	r6, 12(r8)
-	subi 	r6, r6, 0x30
+	ldw 	r5, 16(r8)									# get third bit
+	subi 	r5, r5, 0x30								# convert from ASCII to INT
 
-	ldw 	r5, 16(r8)
-	subi 	r5, r5, 0x30
+	# Getting right decimal value...
 
-	# Multiply r9 by 10 and add to r10
+	/*
+	bit 1 | bit 2 | bit 3
+	RIGHT VALUE = (bit 1 * 100) + (bit 2 * 10) + bit 3
+	*/
 
 	addi 	r10, r0,0x64 								# Multiply to 100
 	mul 	r9, r9, r10
@@ -216,8 +220,8 @@ POW_OF_TWO:
 	addi 	r10, r0,0xA 								# Multiply to  10
 	mul  	r6, r6, r10
 
-	add 	r4, r9, r6   								# Add 100 + 10
-	add 	r4, r4, r5   								# Add 110 +  1
+	add 	r4, r9, r6   								# (bit 1 * 100) + (bit 2 * 10)
+	add 	r4, r4, r5   								# + bit 3
 
 	movia sp, STACK     							# Set stack registers and
 	mov 	fp, sp         							# frame pointer

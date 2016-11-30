@@ -24,7 +24,7 @@ add   r8, r0, r0                  # r8 is  acumulator (start with 0)
 LOOP:
   andi  r6, r4, 0x1
   bne   r6, r3, NAO_INCREMENTA    # If (r4 AND 0x1) == 0,  doesn't inc r8
-  addi  r8, r8, 0x1               # INC
+  addi  r8, r8, 0x1               # Increments
   bgt   r8, r3, END_LOOP
 NAO_INCREMENTA:
   srli  r4, r4, 0x1               # shift right 1
@@ -33,7 +33,7 @@ NAO_INCREMENTA:
   br    LOOP                      # Checks the next bit (shift)
 END_LOOP:
 
-beq   r8, r3, POW                 # If r8 has only 1 in the sequente,ís power of 2
+beq   r8, r3, POW                 # If r8 has only one 1, the input is power of 2
 addi  r2, r0, 0x0
 br    END1
 
@@ -41,8 +41,6 @@ POW:
 	addi  r2,r0, 0x1
 
 END1:
-
-
 
 /********************************************************/
 /*********************EPILOGUE***************************/

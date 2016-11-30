@@ -8,14 +8,14 @@ PRINTF:
 /*********************************************************/
 
 # Adjust the stack pointer
-	addi 	sp, sp, -8					# make a 8-byte frame
+  addi  sp, sp, -8          # make a 8-byte frame
 
 # Store registers to the frame
-	stw 	ra, 4(sp) 					# store the return address
-	stw 	fp, 0(sp) 					# store the frame pointer
+  stw   ra, 4(sp)           # store the return address
+  stw   fp, 0(sp)           # store the frame pointer
 
 # Set the new frame pointer
-	addi 	fp, sp, 0
+  addi  fp, sp, 0
 
 /**********************PRINT******************************/
 
